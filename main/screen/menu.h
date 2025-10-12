@@ -5,9 +5,15 @@
 #include "ssd1306.h"
 #include "config.h"
 
+typedef enum {
+    SCREEN_MAIN,
+    SCREEN_SUBMENU
+} ScreenMode;
+
 typedef struct {
-    int selectedIndex;   // индекс текущего выбора
-    char currentScreen;  // текущий экран (символ)
+    int selectedIndex;
+    char currentScreen;
+    ScreenMode mode;
 } MenuState;
 
 void menu_init(SSD1306_t* oled);

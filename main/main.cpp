@@ -43,8 +43,8 @@ extern "C" void app_main(void) {
     menu_init(&oled);
     menuState.selectedIndex = 0;
     menuState.currentScreen = 'E';
+    menuState.mode = SCREEN_MAIN;
 
-    // --- переменные для антидребезга ---
     int lastA = 1, lastB = 1, lastC = 1;
     int currentA, currentB, currentC;
 
@@ -53,10 +53,9 @@ extern "C" void app_main(void) {
         currentB = gpio_get_level((gpio_num_t)BTN_B_PIN);
         currentC = gpio_get_level((gpio_num_t)BTN_C_PIN);
 
-        // --- Обнаружение нажатия по переходу HIGH -> LOW ---
         if (lastA == 1 && currentA == 0) {
             menu_handle_input(&oled, &menuState, 0, 1, 1);
-            vTaskDelay(pdMS_TO_TICKS(120)); // антидребезг
+            vTaskDelay(pdMS_TO_TICKS(120));
         }
         if (lastB == 1 && currentB == 0) {
             menu_handle_input(&oled, &menuState, 1, 0, 1);
@@ -71,6 +70,6 @@ extern "C" void app_main(void) {
         lastB = currentB;
         lastC = currentC;
 
-        vTaskDelay(pdMS_TO_TICKS(20)); // опрос 50 Гц
+        vTaskDelay(pdMS_TO_TICKS(20));
     }
 }
