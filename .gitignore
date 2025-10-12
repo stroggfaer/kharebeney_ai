@@ -1,0 +1,13 @@
+# Micropython old components
+main/micropythonOld/
+
+# Build directories
+build/
+docs/build/
+
+# IDE files
+.vscode/
+.clangd
+.devcontainer
+components
+pytest_hello_world.py

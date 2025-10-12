@@ -1,0 +1,5 @@
+[wokwi]
+version = 1
+elf = "build/kharebeney_esp_ai.elf"
+firmware = "build/kharebeney_esp_ai.bin"
+rfc2217ServerPort = 4000

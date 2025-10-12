@@ -1,0 +1,68 @@
+{
+  "version": 1,
+  "author": "Grok (modified for better pin visibility and labels)",
+  "editor": "wokwi",
+  "parts": [
+    {
+      "type": "board-esp32-devkit-c-v4",
+      "id": "esp",
+      "top": 10,
+      "left": -100,
+      "attrs": { "env": "esp-idf" }
+    },
+    { "type": "board-ssd1306", "id": "oled1", "top": 100, "left": 60, "attrs": {} },
+    {
+      "type": "wokwi-pushbutton",
+      "id": "btnA",
+      "top": -118.6,
+      "left": -268.8,
+      "attrs": { "color": "red", "label": "Button A (Pin 12)", "xray": "1", "bounce": "1", "key": "1" }
+    },
+    {
+      "type": "wokwi-pushbutton",
+      "id": "btnB",
+      "top": -22.6,
+      "left": -268.8,
+      "attrs": { "color": "black", "label": "Button B (Pin 13)", "xray": "1" }
+    },
+    {
+      "type": "wokwi-pushbutton",
+      "id": "btnC",
+      "top": 73.4,
+      "left": -268.8,
+      "attrs": { "color": "blue", "label": "Button C (Pin 14)", "xray": "1" }
+    },
+    {
+      "type": "wokwi-pushbutton",
+      "id": "btnD",
+      "top": 179,
+      "left": -268.8,
+      "attrs": { "color": "yellow", "label": "Button D (Pin 15)", "xray": "1" }
+    }
+  ],
+  "connections": [
+    [ "esp:TX", "$serialMonitor:RX", "", [] ],
+    [ "esp:RX", "$serialMonitor:TX", "", [] ],
+    [ "oled1:SCL", "esp:22", "green", [ "v0" ] ],
+    [ "oled1:SDA", "esp:21", "blue", [ "v-19.2", "h-124.73" ] ],
+    [ "oled1:GND", "esp:GND.2", "black", [ "v-67.2", "h-96" ] ],
+    [ "oled1:VCC", "esp:3V3", "red", [ "v-28.8", "h0.15", "v-76.8", "h-201.75" ] ],
+    [ "btnA:1", "esp:12", "red", [ "h0" ] ],
+    [ "btnA:2", "esp:GND.1", "black", [ "h0" ] ],
+    [ "btnB:1", "esp:13", "green", [ "h0" ] ],
+    [ "btnB:2", "esp:GND.1", "black", [ "h0" ] ],
+    [ "btnC:1", "esp:14", "blue", [ "h0" ] ],
+    [ "btnC:2", "esp:GND.1", "black", [ "h0" ] ],
+    [ "btnD:1", "esp:15", "yellow", [ "h0" ] ],
+    [ "btnD:2", "esp:GND.1", "black", [ "h0" ] ],
+    [ "esp:GND.1", "btnD:2.r", "black", [ "h-48.61", "v105.2", "h-57.6" ] ],
+    [ "btnD:2.l", "btnC:2.l", "black", [ "h-57.6", "v-105.4" ] ],
+    [ "btnC:2.l", "btnB:2.l", "black", [ "h-57.6", "v-95.8" ] ],
+    [ "btnB:2.l", "btnA:2.l", "black", [ "h-57.6", "v-95.8" ] ],
+    [ "esp:15", "btnD:1.r", "gold", [ "v-0.4", "h28.04", "v57.6", "h-211.2", "v-48" ] ],
+    [ "esp:14", "btnC:1.r", "blue", [ "h-87.01", "v-58" ] ],
+    [ "esp:13", "btnB:1.r", "green", [ "h-77.41", "v-144.4" ] ],
+    [ "btnA:1.r", "esp:12", "red", [ "v0", "h72.2", "v259.2" ] ]
+  ],
+  "dependencies": {}
+}
