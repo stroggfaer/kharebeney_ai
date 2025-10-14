@@ -5,7 +5,7 @@
 #include <time.h>
 
 static const char* topMenu[] = {"E", "G", "M", "T"};
-static const char* bottomMenu[] = {"C", "Y", "D", "S"};
+static const const char* bottomMenu[] = {"C", "Y", "D", "S"};
 static const int topCount = 4;
 static const int bottomCount = 4;
 
@@ -36,9 +36,9 @@ void menu_draw(SSD1306_t* oled, const MenuState* state) {
     for (int i = 0; i < topCount; i++) {
         char tmp[8];
         if (state->mode == SCREEN_MAIN && state->selectedIndex == i)
-            snprintf(tmp, sizeof(tmp), "[%s] ", topMenu[i]);
+            snprintf(tmp, sizeof(tmp), "[%s]", topMenu[i]);
         else
-            snprintf(tmp, sizeof(tmp), " %s  ", topMenu[i]);
+            snprintf(tmp, sizeof(tmp), " %s ", topMenu[i]);
         strcat(topBuf, tmp);
     }
 
@@ -46,14 +46,32 @@ void menu_draw(SSD1306_t* oled, const MenuState* state) {
     for (int i = 0; i < bottomCount; i++) {
         char tmp[8];
         if (state->mode == SCREEN_MAIN && state->selectedIndex == i + topCount)
-            snprintf(tmp, sizeof(tmp), "[%s] ", bottomMenu[i]);
+            snprintf(tmp, sizeof(tmp), "[%s]", bottomMenu[i]);
         else
-            snprintf(tmp, sizeof(tmp), " %s  ", bottomMenu[i]);
+            snprintf(tmp, sizeof(tmp), " %s ", bottomMenu[i]);
         strcat(bottomBuf, tmp);
     }
 
-    ssd1306_display_text(oled, 0, topBuf, strlen(topBuf), false);
-    ssd1306_display_text(oled, 6, bottomBuf, strlen(bottomBuf), false);
+    // --- Время и батарея ---
+    char timeBuf[16];
+    char battBuf[8];
+    get_time_string(timeBuf, sizeof(timeBuf));
+    snprintf(battBuf, sizeof(battBuf), "%d%%", get_battery_percent());
+    char status[32];
+    snprintf(status, sizeof(status), "%s %s", timeBuf, battBuf);
+
+    // --- Склеиваем верхнее меню и статус справа ---
+    char fullLine[64];
+    int totalWidth = 21; // для 128 пикселей ширины ≈ 21 символ
+    snprintf(fullLine, sizeof(fullLine), "%s", topBuf);
+    int used = strlen(fullLine);
+    int remain = totalWidth - used - strlen(status);
+    if (remain < 1) remain = 1;
+    for (int i = 0; i < remain; i++) strcat(fullLine, " ");
+    strcat(fullLine, status);
+
+    // --- Вывод верхней строки ---
+    ssd1306_display_text(oled, 0, fullLine, strlen(fullLine), false);
 
     // --- Центр экрана ---
     if (state->mode == SCREEN_MAIN) {
@@ -63,27 +81,40 @@ void menu_draw(SSD1306_t* oled, const MenuState* state) {
     }
     ssd1306_display_text(oled, 3, buf, strlen(buf), true);
 
-    // --- Статус (часы + батарея) ---
-    char timeBuf[16];
-    char battBuf[8];
-    get_time_string(timeBuf, sizeof(timeBuf));
-    snprintf(battBuf, sizeof(battBuf), "%d%%", get_battery_percent());
-    char status[32];
-    snprintf(status, sizeof(status), "%s %s", timeBuf, battBuf);
-    ssd1306_display_text(oled, 1, status, strlen(status), false);
+    // --- Нижний ряд ---
+    ssd1306_display_text(oled, 6, bottomBuf, strlen(bottomBuf), false);
 
     ssd1306_show_buffer(oled);
 }
 
 // --- Обновление верхнего статуса ---
 void menu_update_status(SSD1306_t* oled) {
+    // Этот метод теперь не нужен для отдельной строки, но оставим совместимость
+    // Можно просто перерисовать верхнюю строку
+    char topBuf[32] = "";
+    for (int i = 0; i < 4; i++) {
+        char tmp[8];
+        snprintf(tmp, sizeof(tmp), " %s ", topMenu[i]);
+        strcat(topBuf, tmp);
+    }
+
     char timeBuf[16];
     char battBuf[8];
     get_time_string(timeBuf, sizeof(timeBuf));
     snprintf(battBuf, sizeof(battBuf), "%d%%", get_battery_percent());
     char status[32];
     snprintf(status, sizeof(status), "%s %s", timeBuf, battBuf);
-    ssd1306_display_text(oled, 1, status, strlen(status), false);
+
+    char fullLine[64];
+    int totalWidth = 21;
+    snprintf(fullLine, sizeof(fullLine), "%s", topBuf);
+    int used = strlen(fullLine);
+    int remain = totalWidth - used - strlen(status);
+    if (remain < 1) remain = 1;
+    for (int i = 0; i < remain; i++) strcat(fullLine, " ");
+    strcat(fullLine, status);
+
+    ssd1306_display_text(oled, 0, fullLine, strlen(fullLine), false);
     ssd1306_show_buffer(oled);
 }
 
