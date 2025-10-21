@@ -10,7 +10,8 @@
 #include "menu.h"
 #include "esp_mac.h"
 
-static SSD1306_t oled;
+// Глобальная переменная для доступа к OLED дисплею из всех экранов
+SSD1306_t oled;
 static MenuState menuState;
 
 void init_i2c() {

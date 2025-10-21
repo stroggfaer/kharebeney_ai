@@ -1,6 +1,16 @@
 idf_component_register(
     SRCS "main.cpp"
          "screen/menu.cpp"
-    INCLUDE_DIRS "." "screen"
+         "screen/main/screen_main.cpp"
+         "screen/food/screen_food.cpp"
+         "screen/game/screen_game.cpp"
+         "screen/medicine/screen_medicine.cpp"
+         "screen/toilet/screen_toilet.cpp"
+         "screen/status/screen_status.cpp"
+         "screen/study/screen_study.cpp"
+         "screen/discipline/screen_discipline.cpp"
+         "screen/settings/screen_settings.cpp"
+         "lib/utlis.cpp"
+    INCLUDE_DIRS "." "screen" "lib"
     REQUIRES i2cdev ssd1306 esp_timer
 )
