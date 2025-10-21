@@ -61,6 +61,7 @@ void menu_init(SSD1306_t* oled) {
 // 🎨 Основная функция отрисовки меню
 // ────────────────────────────────────────────────
 void menu_draw(SSD1306_t* oled, const MenuState* state) {
+    
     // Если мы находимся в подменю, отображаем соответствующий экран
     if (state->mode == SCREEN_SUBMENU) {
         switch (state->currentScreen) {
@@ -109,7 +110,6 @@ void menu_draw(SSD1306_t* oled, const MenuState* state) {
     // Отрисовка главного меню
     ssd1306_clear_screen(oled, false);
 
-    char buf[32];
     char topBuf[32] = "";
     char bottomBuf[32] = "";
 
@@ -143,12 +143,8 @@ void menu_draw(SSD1306_t* oled, const MenuState* state) {
 
     // --- Центр экрана ---
     if (state->mode == SCREEN_MAIN) {
-        // Выводим тестовый спрайт вместо текста "Main" (32x32 пикселей) по центру
-        display_centered_sprite(oled, (const uint8_t*)icon_food, 16, 16);
-    } else {
-        snprintf(buf, sizeof(buf), "Menu: %c", state->currentScreen);
-        ssd1306_display_text(oled, 3, buf, strlen(buf), true);
-    }
+        draw_screen_main(oled);
+    } 
 
     // --- Статус: время + батарея ---
     char timeBuf[16];

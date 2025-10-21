@@ -3,13 +3,14 @@
 #include "../fonts/icons.h"
 #include "ssd1306.h"
 #include "../display.h"
+#include "../lib/utlis.h"
 
 extern KharebeneyAgent agent;
 
-void draw_screen_main() {
-    ssd1306_clear_screen(&oled, false);
-    ssd1306_display_text(&oled, 3, "Main", 4, false);
-    ssd1306_show_buffer(&oled);
+void draw_screen_main(SSD1306_t* oled) {
+    // Выводим тестовый спрайт вместо текста "Main" (32x32 пикселей) по центру
+    display_centered_sprite(oled, (const uint8_t*)icon_food, 16, 16);
+    ssd1306_show_buffer(oled);
 }
 
 void handle_main_interaction(int x, int y) {
