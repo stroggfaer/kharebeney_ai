@@ -23,3 +23,10 @@ void display_centered_text(SSD1306_t* oled, const char* text) {
     // Используем ssd1306_display_text_box1 для отображения текста с заданной позицией X
     ssd1306_display_text_box1(oled, y, x, text, text_len, text_len, true, 0);
 }
+// Очистка экран центр
+void clear_screen_center(SSD1306_t* oled) {
+    // очищаем всё, кроме верхнего и нижнего меню
+    for (int page = 2; page <= 5; page++) {
+        memset(oled->_page[page]._segs, 0, 128);
+    }
+}

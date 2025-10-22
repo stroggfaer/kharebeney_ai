@@ -21,15 +21,15 @@ void menu_draw(SSD1306_t* oled, const MenuState* state);
 void menu_update_status(SSD1306_t* oled);
 void menu_handle_input(SSD1306_t* oled, MenuState* state, int btnA, int btnB, int btnC);
 
-// Функции для отрисовки специфичных экранов
-void draw_screen_food();
-void draw_screen_game();
-void draw_screen_medicine();
-void draw_screen_toilet();
-void draw_screen_status();
-void draw_screen_study();
-void draw_screen_discipline();
-void draw_screen_settings();
-void draw_screen_main();
+// Функции экранов
+void draw_screen_food(SSD1306_t* oled);
+void draw_screen_game(SSD1306_t* oled);
+void draw_screen_medicine(SSD1306_t* oled);
+void draw_screen_toilet(SSD1306_t* oled);
+void draw_screen_status(SSD1306_t* oled);
+void draw_screen_study(SSD1306_t* oled);
+void draw_screen_discipline(SSD1306_t* oled);
+void draw_screen_settings(SSD1306_t* oled);
+void draw_screen_main(SSD1306_t* oled);
 
 #endif // MENU_H

@@ -9,4 +9,6 @@ void display_centered_sprite(SSD1306_t* oled, const uint8_t* sprite_data, int sp
 // Функция для центрирования и отображения текста на экране
 void display_centered_text(SSD1306_t* oled, const char* text);
 
+void clear_screen_center(SSD1306_t* oled);
+
 #endif // UTILS_H
