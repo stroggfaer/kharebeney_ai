@@ -38,7 +38,6 @@ private:
     float calculate_experience_gain(const char* action, bool success, const float* context) const;
     void update_skills(const char* action, bool success);
     void check_level_up();
-    bool analyze_success(const char* action, const float* pre_states, const float* post_states) const;
 
 public:
     LearningSystem();
@@ -52,6 +51,7 @@ public:
     void get_status(uint32_t* level, uint32_t* exp, const float** skills_ptr,
                    uint32_t* total, uint32_t* successful, float* success_rate) const;
     void optimize_learning();
+    bool analyze_success(const char* action, const float* pre_states, const float* post_states) const;
 
     // Сериализация
     size_t serialize(uint8_t* buffer, size_t buffer_size) const;

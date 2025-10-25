@@ -57,8 +57,17 @@ const char* KharebeneyAgent::decide_enhanced() {
     std::vector<std::string> learning_recommendations = learning_system.get_recommendations();
 
     // Генерируем комбинированный промт
+    // Создаем массив из первых 6 полей (hunger, happiness, health, energy, social, curiosity)
+    float state_array[6] = {
+        states->hunger,
+        states->happiness,
+        states->health,
+        states->energy,
+        states->social,
+        states->curiosity
+    };
     std::string combined_prompt = prompt_system.generate_combined_prompt(
-        (const float*)states, emotional_state ? emotional_state->name.c_str() : "neutral",
+        state_array, emotional_state ? emotional_state->name.c_str() : "neutral",
         &learning_recommendations
     );
 
@@ -66,23 +75,43 @@ const char* KharebeneyAgent::decide_enhanced() {
     const float* action_weights = decision_engine.get_action_weights();
 
     // Принимаем решение
-    return decision_engine.decide((const float*)states, nullptr, action_weights,
+    return decision_engine.decide(state_array, nullptr, action_weights,
                                  emotional_state ? emotional_state->name.c_str() : "neutral");
 }
 
 void KharebeneyAgent::act_enhanced(const char* action) {
     const InternalStates* pre_state = internal_state.get_states();
 
+    // Создаем массивы только из первых 6 полей (hunger, happiness, health, energy, social, curiosity)
+    float pre_state_array[6] = {
+        pre_state->hunger,
+        pre_state->happiness,
+        pre_state->health,
+        pre_state->energy,
+        pre_state->social,
+        pre_state->curiosity
+    };
+
     // Создаем эмбеддинг для предыдущего состояния
-    Embedding pre_embedding = EmbeddingConverter::states_to_embedding((const float*)pre_state);
+    Embedding pre_embedding = EmbeddingConverter::states_to_embedding(pre_state_array);
 
     // Выполняем действие
     internal_state.perform_action(action);
 
     const InternalStates* post_state = internal_state.get_states();
 
+    // Создаем массивы только из первых 6 полей (hunger, happiness, health, energy, social, curiosity)
+    float post_state_array[6] = {
+        post_state->hunger,
+        post_state->happiness,
+        post_state->health,
+        post_state->energy,
+        post_state->social,
+        post_state->curiosity
+    };
+
     // Создаем эмбеддинг для последующего состояния
-    Embedding post_embedding = EmbeddingConverter::states_to_embedding((const float*)post_state);
+    Embedding post_embedding = EmbeddingConverter::states_to_embedding(post_state_array);
 
     // Рассчитываем важность для памяти
     float importance = calculate_memory_importance(action, pre_state, post_state);
@@ -91,21 +120,21 @@ void KharebeneyAgent::act_enhanced(const char* action) {
     const LifecycleInfo lifecycle_info = lifecycle_system.get_current_stage_info();
     const Emotion* emotion = emotion_system.get_current_emotion();
 
-    memory_system.store_memory(action, (const float*)pre_state, importance,
+    memory_system.store_memory(action, pre_state_array, importance,
                               emotion ? emotion->name.c_str() : "neutral", &lifecycle_info);
 
     // Создаем комбинированный эмбеддинг для хранения в памяти
     std::string emotion_str = emotion ? emotion->name.c_str() : "neutral";
-    Embedding combined_embedding = EmbeddingConverter::combined_embedding((const float*)pre_state, emotion_str, action);
+    Embedding combined_embedding = EmbeddingConverter::combined_embedding(pre_state_array, emotion_str, action);
 
     // Записываем эмбеддинги в систему памяти для семантического поиска
     memory_system.store_embedding(action, pre_embedding, post_embedding, combined_embedding, importance);
 
     // Записываем в базу знаний
-    knowledge_base.record_action(action, (const float*)pre_state, (const float*)post_state);
+    knowledge_base.record_action(action, pre_state_array, post_state_array);
 
     // Обучаемся на опыте с анализом изменений состояний
-    learning_system.learn_from_experience(action, true, (const float*)pre_state, (const float*)post_state);
+    learning_system.learn_from_experience(action, true, pre_state_array, post_state_array);
 
     // Обновляем Q-таблицу на основе награды (успеха)
     float reward = importance; // Используем важность как базовую награду
@@ -118,7 +147,7 @@ void KharebeneyAgent::act_enhanced(const char* action) {
         }
     }
     if (action_idx >= 0) {
-        decision_engine.update_q_table(action_idx, reward, (const float*)pre_state, (const float*)post_state);
+        decision_engine.update_q_table(action_idx, reward, pre_state_array, post_state_array);
     }
 
     // Записываем действие в менеджер баланса

@@ -336,18 +336,19 @@ bool LearningSystem::analyze_success(const char* action, const float* pre_states
     if (!pre_states || !post_states) return false;
 
     // Определяем ожидаемый эффект действия
+    // Индексы состояний: 0-hunger, 1-happiness, 2-health, 3-energy, 4-social, 5-curiosity
     if (strcmp(action, "feed") == 0) {
-        // Ожидаем улучшение голодного состояния
+        // Ожидаем улучшение голодного состояния (уменьшение голода)
         return post_states[0] < pre_states[0] - 0.05f; // hunger уменьшился
     } else if (strcmp(action, "heal") == 0) {
         // Ожидаем улучшение здоровья
-        return post_states[1] > pre_states[1] + 0.05f; // health увеличился
+        return post_states[2] > pre_states[2] + 0.05f; // health увеличился
     } else if (strcmp(action, "rest") == 0) {
         // Ожидаем восстановление энергии
-        return post_states[2] > pre_states[2] + 0.05f; // energy увеличился
+        return post_states[3] > pre_states[3] + 0.05f; // energy увеличился
     } else if (strcmp(action, "play") == 0) {
         // Ожидаем улучшение счастья
-        return post_states[3] > pre_states[3] + 0.05f; // happiness увеличился
+        return post_states[1] > pre_states[1] + 0.05f; // happiness увеличился
     } else if (strcmp(action, "socialize") == 0) {
         // Ожидаем улучшение социального состояния
         return post_states[4] > pre_states[4] + 0.05f; // social увеличился

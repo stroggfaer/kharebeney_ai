@@ -69,9 +69,14 @@ void DecisionEngine::update_q_table(int action_idx, float reward, const float* p
     current_q /= 6.0f;
     float td_error = td_target - current_q;
 
-    // Обновляем Q-значения для всех состояний
+    // Обновляем Q-значения для всех состояний с учетом специфики каждого состояния
     for (int s = 0; s < 6; s++) {
-        q_table[action_idx][s] += learning_rate * td_error;
+        // Разные состояния могут иметь разные веса обновления
+        float state_learning_rate = learning_rate;
+        if (s == 0) state_learning_rate *= 1.2f; // hunger может быть приоритетнее
+        else if (s == 2) state_learning_rate *= 1.1f; // health тоже важен
+        
+        q_table[action_idx][s] += state_learning_rate * td_error;
         // Ограничиваем значения в диапазоне [0, 1]
         if (q_table[action_idx][s] < 0.0f) q_table[action_idx][s] = 0.0f;
         if (q_table[action_idx][s] > 1.0f) q_table[action_idx][s] = 1.0f;
@@ -387,8 +392,11 @@ size_t MemorySystem::serialize(uint8_t* buffer, size_t buffer_size) const {
         offset += sizeof(uint32_t);
         
         // Сохраняем строку action
-        strcpy((char*)(buffer + offset), memory.action.c_str());
-        offset += memory.action.length() + 1;
+        size_t action_len = memory.action.length();
+        strncpy((char*)(buffer + offset), memory.action.c_str(), action_len);
+        offset += action_len;
+        buffer[offset] = '\0';
+        offset += 1;
         
         // Сохраняем importance
         *(float*)(buffer + offset) = memory.importance;
@@ -399,8 +407,11 @@ size_t MemorySystem::serialize(uint8_t* buffer, size_t buffer_size) const {
         offset += sizeof(uint32_t);
         
         // Сохраняем строку emotion
-        strcpy((char*)(buffer + offset), memory.emotion.c_str());
-        offset += memory.emotion.length() + 1;
+        size_t emotion_len = memory.emotion.length();
+        strncpy((char*)(buffer + offset), memory.emotion.c_str(), emotion_len);
+        offset += emotion_len;
+        buffer[offset] = '\0';
+        offset += 1;
         
         // Сохраняем timestamp
         *(uint32_t*)(buffer + offset) = memory.timestamp;
@@ -428,8 +439,11 @@ size_t MemorySystem::serialize(uint8_t* buffer, size_t buffer_size) const {
             offset += sizeof(uint32_t);
             
             // Сохраняем ключ
-            strcpy((char*)(buffer + offset), ctx_pair.first.c_str());
-            offset += ctx_pair.first.length() + 1;
+            size_t key_len = ctx_pair.first.length();
+            strncpy((char*)(buffer + offset), ctx_pair.first.c_str(), key_len);
+            offset += key_len;
+            buffer[offset] = '\0';
+            offset += 1;
             
             // Сохраняем значение
             *(float*)(buffer + offset) = ctx_pair.second;
