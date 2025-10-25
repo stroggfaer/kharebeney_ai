@@ -2,6 +2,7 @@
 #include <esp_timer.h>
 #include <cstring>
 #include <cmath>
+#include <algorithm>
 
 // Глобальная переменная агента
 KharebeneyAgent* agent = nullptr;
@@ -155,6 +156,79 @@ float KharebeneyAgent::calculate_memory_importance(const char* action, const Int
 void KharebeneyAgent::set_prompt(const char* prompt_type, const char* content, bool temporary, uint32_t duration) {
     prompt_system.set_prompt(prompt_type, content, temporary, duration);
     printf("Prompt set: %s\n", prompt_type);
+}
+
+void KharebeneyAgent::set_behavior_state(BehaviorStateType type, const char* state, float intensity, uint32_t duration) {
+    apply_behavior_state(type, state, intensity, duration);
+    printf("Behavior state set: type=%d, state=%s, intensity=%.2f\n", type, state, intensity);
+}
+
+void KharebeneyAgent::apply_behavior_state(BehaviorStateType type, const char* state, float intensity, uint32_t duration) {
+    switch(type) {
+        case EMOTION_STATE:
+            // Применяем эмоциональное состояние
+            emotion_system.trigger_emotion(state, intensity);
+            break;
+            
+        case BEHAVIOR_STATE:
+            // Изменяем приоритеты действий в зависимости от состояния
+            if (strcmp(state, "aggressive") == 0) {
+                decision_engine.update_action_weight(4, 0.8f * intensity); // socialize
+            } else if (strcmp(state, "calm") == 0) {
+                decision_engine.update_action_weight(3, 0.9f * intensity); // rest
+            } else if (strcmp(state, "curious") == 0) {
+                decision_engine.update_action_weight(5, 0.85f * intensity); // explore
+            } else if (strcmp(state, "playful") == 0) {
+                decision_engine.update_action_weight(1, 0.9f * intensity); // play
+            } else if (strcmp(state, "hungry") == 0) {
+                decision_engine.update_action_weight(0, 0.95f * intensity); // feed
+            } else if (strcmp(state, "tired") == 0) {
+                decision_engine.update_action_weight(3, 0.9f * intensity); // rest
+            } else if (strcmp(state, "sick") == 0) {
+                decision_engine.update_action_weight(2, 0.9f * intensity); // heal
+            } else if (strcmp(state, "lonely") == 0) {
+                decision_engine.update_action_weight(4, 0.85f * intensity); // socialize
+            }
+            break;
+            
+        case APPEARANCE_STATE:
+            // Для визуальных эффектов - можно добавить в будущем
+            break;
+            
+        case MEMORY_STATE:
+            // Изменяем важность памяти в зависимости от состояния
+            break;
+            
+        case LEARNING_STATE:
+            // Изменяем параметры обучения
+            if (strcmp(state, "focused") == 0) {
+                learning_system.adjust_learning_rate(0.1f * intensity);
+            } else if (strcmp(state, "distracted") == 0) {
+                learning_system.adjust_learning_rate(-0.05f * intensity);
+            }
+            break;
+            
+        case SOCIAL_STATE:
+            // Изменяем социальные параметры
+            if (strcmp(state, "friendly") == 0) {
+                balance_manager.adjust_social_priority(0.1f * intensity);
+            } else if (strcmp(state, "antisocial") == 0) {
+                balance_manager.adjust_social_priority(-0.1f * intensity);
+            }
+            break;
+            
+        case ENERGY_STATE:
+            // Изменяем уровень энергии
+            if (strcmp(state, "energetic") == 0) {
+                internal_state.boost_energy(0.2f * intensity);
+            } else if (strcmp(state, "tired") == 0) {
+                internal_state.reduce_energy(0.1f * intensity);
+            }
+            break;
+            
+        default:
+            break;
+    }
 }
 
 void KharebeneyAgent::trigger_emotion(const char* emotion, float intensity) {

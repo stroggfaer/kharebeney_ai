@@ -123,6 +123,11 @@ float BalanceManager::get_action_priority(const char* action, const float* state
     return std::max(0.0f, std::min(1.0f, base_priority));
 }
 
+void BalanceManager::adjust_social_priority(float adjustment) {
+    // Регулируем приоритет социальных действий
+    state_priorities[4] = std::max(0.1f, std::min(0.9f, state_priorities[4] + adjustment));
+}
+
 void BalanceManager::record_action(const char* action, bool success) {
     ActionRecord record;
     record.action = action;

@@ -33,6 +33,7 @@ public:
     void update();
     float get_action_priority(const char* action, const float* states) const;
     void record_action(const char* action, bool success);
+    void adjust_social_priority(float adjustment);
 
     float get_exploration_rate() const { return exploration_rate; }
     float get_exploitation_rate() const { return exploitation_rate; }

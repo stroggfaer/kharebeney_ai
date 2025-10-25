@@ -46,6 +46,7 @@ public:
 
     void update();
     void learn_from_experience(const char* action, bool success, const float* pre_states = nullptr, const float* post_states = nullptr);
+    void adjust_learning_rate(float adjustment);
     std::vector<std::string> get_recommendations() const;
     LearningInsights get_insights() const;
     void get_status(uint32_t* level, uint32_t* exp, const float** skills_ptr,

@@ -86,6 +86,12 @@ void DecisionEngine::update_q_table(int action_idx, float reward, const float* p
     action_weights[action_idx] = avg_q_value;
 }
 
+void DecisionEngine::update_action_weight(int action_idx, float new_weight) {
+    if (action_idx >= 0 && action_idx < 7) {
+        action_weights[action_idx] = std::max(0.0f, std::min(1.0f, new_weight));
+    }
+}
+
 int DecisionEngine::select_action(const float* states, bool* is_exploration) const {
     // Определяем индекс действия на основе эмоционального состояния и текущих состояний
     float rand_val = (float)rand() / RAND_MAX;

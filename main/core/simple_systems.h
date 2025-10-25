@@ -40,6 +40,7 @@ public:
     DecisionEngine();
     const float* get_action_weights() const { return action_weights; }
     void update_q_table(int action_idx, float reward, const float* prev_states, const float* curr_states);
+    void update_action_weight(int action_idx, float new_weight);
     int select_action(const float* states, bool* is_exploration = nullptr) const;
     const char* decide(const float* states, const float* sensor_data, const float* weights, const char* emotional_state);
 };

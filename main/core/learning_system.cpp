@@ -47,6 +47,11 @@ void LearningSystem::update() {
     last_update = current_time;
 }
 
+void LearningSystem::adjust_learning_rate(float adjustment) {
+    // Изменяем скорость обучения с ограничениями
+    learning_rate = std::max(0.001f, std::min(0.05f, learning_rate + adjustment));
+}
+
 void LearningSystem::learn_from_experience(const char* action, bool success, const float* pre_states, const float* post_states) {
     // Анализируем успех на основе изменения состояний, если доступны
     bool actual_success = success;

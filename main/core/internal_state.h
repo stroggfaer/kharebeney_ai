@@ -48,6 +48,8 @@ public:
 
     void update();
     void perform_action(const char* action);
+    void boost_energy(float amount);
+    void reduce_energy(float amount);
     const InternalStates* get_states() const { return &states; }
     void set_states(const InternalStates* new_states);
     uint32_t get_critical_states() const;

@@ -177,3 +177,13 @@ bool InternalState::deserialize(const uint8_t* buffer, size_t buffer_size) {
     normalize_states();
     return true;
 }
+
+void InternalState::boost_energy(float amount) {
+    states.energy = std::min(1.0f, states.energy + amount);
+    normalize_states();
+}
+
+void InternalState::reduce_energy(float amount) {
+    states.energy = std::max(0.0f, states.energy - amount);
+    normalize_states();
+}

@@ -9,6 +9,17 @@
 #include "embedding.h"  // Добавляем систему эмбеддингов
 #include "../config.h"
 
+// Перечисление для типов поведенческих состояний
+typedef enum {
+    EMOTION_STATE = 0,    // Отвечает за эмоции и влияет на анимацию
+    BEHAVIOR_STATE,       // Отвечает за поведение и влияет на принятие решений
+    APPEARANCE_STATE,     // Отвечает за визуальное отображение и анимацию
+    MEMORY_STATE,         // Отвечает за приоритеты памяти
+    LEARNING_STATE,       // Отвечает за обучение и адаптацию
+    SOCIAL_STATE,         // Отвечает за социальные взаимодействия
+    ENERGY_STATE          // Отвечает за уровень активности
+} BehaviorStateType;
+
 class KharebeneyAgent {
 private:
     InternalState internal_state;
@@ -32,6 +43,7 @@ private:
     void act_enhanced(const char* action);
     float calculate_memory_importance(const char* action, const InternalStates* pre_state,
                                     const InternalStates* post_state) const;
+    void apply_behavior_state(BehaviorStateType type, const char* state, float intensity = 1.0f, uint32_t duration = 0);
 
 public:
     KharebeneyAgent();
@@ -39,6 +51,7 @@ public:
 
     const char* update();
     void set_prompt(const char* prompt_type, const char* content, bool temporary = false, uint32_t duration = 3600);
+    void set_behavior_state(BehaviorStateType type, const char* state, float intensity = 1.0f, uint32_t duration = 0);
     void trigger_emotion(const char* emotion, float intensity);
     const char* get_emotional_description() const;
     std::vector<std::string> get_learning_insights() const;

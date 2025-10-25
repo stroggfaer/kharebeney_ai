@@ -127,6 +127,65 @@ void draw_screen_settings(SSD1306_t* oled) {
         std::vector<MemoryRecord> keyword_memories = agent->search_memories("feed");
         printf("Найдено %zu воспоминаний по ключевому слову 'feed'\n", keyword_memories.size());
         
+        // Тестирование промтов и поведенческих состояний
+        printf("=== Тестирование промтов и поведенческих состояний ===\n");
+        printf("Применение различных поведенческих состояний для тестирования агента:\n");
+        
+        // Сохраняем текущие промты для последующего восстановления
+        // Тест 1: Эмоциональное состояние
+        agent->set_behavior_state(EMOTION_STATE, "joy", 0.8f);
+        printf("Тест 1 - Эмоциональное состояние: 'joy' (интенсивность 0.8)\n");
+        action = agent->update();
+        const InternalStates* test_states = agent->get_internal_states();
+        const Emotion* test_emotion = agent->get_emotional_state();
+        printf(" Действие: %s, Голод: %.3f, Счастье: %.3f, Социальность: %.3f, Эмоция: %s, Интенсивность: %.3f\n",
+               action ? action : "нет", test_states->hunger, test_states->happiness, test_states->social,
+               test_emotion ? test_emotion->name.c_str() : "нет", test_emotion ? test_emotion->intensity : 0.0f);
+                
+        // Тест 2: Поведенческое состояние
+        agent->set_behavior_state(BEHAVIOR_STATE, "curious", 0.7f);
+        printf("Тест 2 - Поведенческое состояние: 'curious' (интенсивность 0.7)\n");
+        action = agent->update();
+        test_states = agent->get_internal_states();
+        test_emotion = agent->get_emotional_state();
+        printf("  Действие: %s, Голод: %.3f, Счастье: %.3f, Любопытство: %.3f, Эмоция: %s, Интенсивность: %.3f\n",
+               action ? action : "нет", test_states->hunger, test_states->happiness, test_states->curiosity,
+               test_emotion ? test_emotion->name.c_str() : "нет", test_emotion ? test_emotion->intensity : 0.0f);
+                
+        // Тест 3: Социальное состояние
+        agent->set_behavior_state(SOCIAL_STATE, "friendly", 0.6f);
+        printf("Тест 3 - Социальное состояние: 'friendly' (интенсивность 0.6)\n");
+        action = agent->update();
+        test_states = agent->get_internal_states();
+        test_emotion = agent->get_emotional_state();
+        printf(" Действие: %s, Голод: %.3f, Счастье: %.3f, Социальность: %.3f, Эмоция: %s, Интенсивность: %.3f\n",
+               action ? action : "нет", test_states->hunger, test_states->happiness, test_states->social,
+               test_emotion ? test_emotion->name.c_str() : "нет", test_emotion ? test_emotion->intensity : 0.0f);
+                
+        // Тест 4: Энергетическое состояние
+        agent->set_behavior_state(ENERGY_STATE, "energetic", 0.5f);
+        printf("Тест 4 - Энергетическое состояние: 'energetic' (интенсивность 0.5)\n");
+        action = agent->update();
+        test_states = agent->get_internal_states();
+        test_emotion = agent->get_emotional_state();
+        printf("  Действие: %s, Энергия: %.3f, Счастье: %.3f, Здоровье: %.3f, Эмоция: %s, Интенсивность: %.3f\n",
+               action ? action : "нет", test_states->energy, test_states->happiness, test_states->health,
+               test_emotion ? test_emotion->name.c_str() : "нет", test_emotion ? test_emotion->intensity : 0.0f);
+                
+        // Тест 5: Обучающееся состояние
+        agent->set_behavior_state(LEARNING_STATE, "focused", 0.9f);
+        printf("Тест 5 - Обучающееся состояние: 'focused' (интенсивность 0.9)\n");
+        action = agent->update();
+        test_states = agent->get_internal_states();
+        test_emotion = agent->get_emotional_state();
+        printf(" Действие: %s, Голод: %.3f, Счастье: %.3f, Любопытство: %.3f, Эмоция: %s, Интенсивность: %.3f\n",
+               action ? action : "нет", test_states->hunger, test_states->happiness, test_states->curiosity,
+               test_emotion ? test_emotion->name.c_str() : "нет", test_emotion ? test_emotion->intensity : 0.0f);
+                
+        // Восстанавливаем стандартные промты
+        agent->set_prompt("personality", "You are a smart AI agent for ESP32-S3.");
+        agent->set_prompt("behavior", "You are optimized for microcontroller operation.");
+                
         printf("=== Конец тестирования агента ===\n");
     } else {
         ssd1306_display_text(oled, 3, "No agent", 8, false);
