@@ -3,6 +3,8 @@
 #include <cstring>
 #include <cmath>
 
+// Глобальная переменная агента
+KharebeneyAgent* agent = nullptr;
 const char* KharebeneyAgent::TAG = "KharebeneyAgent";
 
 KharebeneyAgent::KharebeneyAgent() :
@@ -70,10 +72,16 @@ const char* KharebeneyAgent::decide_enhanced() {
 void KharebeneyAgent::act_enhanced(const char* action) {
     const InternalStates* pre_state = internal_state.get_states();
 
+    // Создаем эмбеддинг для предыдущего состояния
+    Embedding pre_embedding = EmbeddingConverter::states_to_embedding((const float*)pre_state);
+
     // Выполняем действие
     internal_state.perform_action(action);
 
     const InternalStates* post_state = internal_state.get_states();
+
+    // Создаем эмбеддинг для последующего состояния
+    Embedding post_embedding = EmbeddingConverter::states_to_embedding((const float*)post_state);
 
     // Рассчитываем важность для памяти
     float importance = calculate_memory_importance(action, pre_state, post_state);
@@ -84,6 +92,13 @@ void KharebeneyAgent::act_enhanced(const char* action) {
 
     memory_system.store_memory(action, (const float*)pre_state, importance,
                               emotion ? emotion->name.c_str() : "neutral", &lifecycle_info);
+
+    // Создаем комбинированный эмбеддинг для хранения в памяти
+    std::string emotion_str = emotion ? emotion->name.c_str() : "neutral";
+    Embedding combined_embedding = EmbeddingConverter::combined_embedding((const float*)pre_state, emotion_str, action);
+
+    // Записываем эмбеддинги в систему памяти для семантического поиска
+    memory_system.store_embedding(action, pre_embedding, post_embedding, combined_embedding, importance);
 
     // Записываем в базу знаний
     knowledge_base.record_action(action, (const float*)pre_state, (const float*)post_state);
@@ -169,6 +184,10 @@ std::vector<MemoryRecord> KharebeneyAgent::search_memories(const char* query) co
     return memory_system.search_memories(query);
 }
 
+std::vector<MemoryRecord> KharebeneyAgent::search_memories_by_embedding(const Embedding& query_embedding, float threshold) const {
+    return memory_system.search_memories_by_embedding(query_embedding, threshold);
+}
+
 void KharebeneyAgent::get_memory_summary(uint32_t* total, uint32_t* retrievals, uint32_t* consolidations) const {
     memory_system.get_memory_summary(total, retrievals, consolidations);
 }
@@ -222,6 +241,14 @@ bool KharebeneyAgent::save_state(const char* filename) {
 
     // BalanceManager
     size = balance_manager.serialize(buffer + total_size, sizeof(buffer) - total_size);
+    if (size == 0) {
+        fclose(file);
+        return false;
+    }
+    total_size += size;
+
+    // MemorySystem
+    size = memory_system.serialize(buffer + total_size, sizeof(buffer) - total_size);
     if (size == 0) {
         fclose(file);
         return false;
@@ -310,6 +337,15 @@ bool KharebeneyAgent::load_state(const char* filename) {
     offset += size;
 
     size = balance_manager.deserialize(buffer + offset, total_size - offset);
+    if (size == 0) {
+        delete[] buffer;
+        fclose(file);
+        return false;
+    }
+    offset += size;
+
+    // MemorySystem
+    size = memory_system.deserialize(buffer + offset, total_size - offset);
     if (size == 0) {
         delete[] buffer;
         fclose(file);

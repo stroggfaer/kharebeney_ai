@@ -5,7 +5,7 @@
 #include "../display.h"
 #include "../lib/utlis.h"
 
-extern KharebeneyAgent agent;
+extern KharebeneyAgent* agent;
 
 void draw_screen_main(SSD1306_t* oled) {
     // Выводим тестовый спрайт вместо текста "Main" (32x32 пикселей) по центру

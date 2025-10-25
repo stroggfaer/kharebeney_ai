@@ -5,7 +5,7 @@
 #include "../display.h"
 #include "../lib/utlis.h"
 
-extern KharebeneyAgent agent;
+extern KharebeneyAgent* agent;
 
 void draw_screen_study(SSD1306_t* oled) {
     clear_screen_center(oled);

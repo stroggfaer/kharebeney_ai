@@ -5,6 +5,7 @@
 #include <vector>
 #include <string>
 #include <unordered_map>
+#include "embedding.h"  // Добавляем поддержку эмбеддингов
 #include "../config.h"
 
 // KnowledgeBase
@@ -71,6 +72,7 @@ typedef struct {
     std::string emotion;
     LifecycleInfo lifecycle_stage;
     uint32_t timestamp;
+    Embedding embedding;  // Добавляем эмбеддинг для семантического поиска
 } MemoryRecord;
 
 class MemorySystem {
@@ -85,8 +87,15 @@ public:
     void update();
     void store_memory(const char* action, const float* context, float importance,
                      const char* emotion, const LifecycleInfo* lifecycle_stage);
+    void store_embedding(const char* action, const Embedding& pre_state_embedding,
+                        const Embedding& post_state_embedding, const Embedding& combined_embedding, float importance);
     std::vector<MemoryRecord> search_memories(const char* query) const;
+    std::vector<MemoryRecord> search_memories_by_embedding(const Embedding& query_embedding, float threshold = 0.7f) const;
     void get_memory_summary(uint32_t* total, uint32_t* retrievals, uint32_t* consolidations) const;
+    
+    // Сериализация
+    size_t serialize(uint8_t* buffer, size_t buffer_size) const;
+    bool deserialize(const uint8_t* buffer, size_t buffer_size);
 };
 
 // PromptSystem

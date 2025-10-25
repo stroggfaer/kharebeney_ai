@@ -6,6 +6,7 @@
 #include "emotion_system.h"
 #include "learning_system.h"
 #include "simple_systems.h"
+#include "embedding.h"  // Добавляем систему эмбеддингов
 #include "../config.h"
 
 class KharebeneyAgent {
@@ -43,6 +44,7 @@ public:
     std::vector<std::string> get_learning_insights() const;
     const LifecycleInfo get_lifecycle_info() const;
     std::vector<MemoryRecord> search_memories(const char* query) const;
+    std::vector<MemoryRecord> search_memories_by_embedding(const Embedding& query_embedding, float threshold = 0.7f) const;
     void get_memory_summary(uint32_t* total, uint32_t* retrievals, uint32_t* consolidations) const;
     void optimize_behavior();
 
@@ -58,5 +60,8 @@ public:
     const Emotion* get_emotional_state() const { return emotion_system.get_current_emotion(); }
     const LearningSystem& get_learning_system() const { return learning_system; }
 };
+
+// Объявление глобальной переменной агента
+extern KharebeneyAgent* agent;
 
 #endif // KHAREBNEY_AGENT_H

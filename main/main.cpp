@@ -9,6 +9,7 @@
 #include "config.h"
 #include "menu.h"
 #include "esp_mac.h"
+#include "core/kharebeney_agent.h"
 
 // Глобальная переменная для доступа к OLED дисплею из всех экранов
 SSD1306_t oled;
@@ -40,6 +41,9 @@ extern "C" void app_main(void) {
     init_i2c();
     init_oled();
     init_buttons();
+
+    // Создаем экземпляр агента
+    agent = new KharebeneyAgent();
 
     menu_init(&oled);
     menuState.selectedIndex = 0;

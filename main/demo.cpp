@@ -9,11 +9,11 @@
 
 // C++ headers
 #include "core/kharebeney_agent.h"
+#include "core/embedding.h"  // Подключаем эмбеддинги
 #include "config.h"
 
 // static const char *TAG = "MAIN"; // Not used
 static SSD1306_t oled;
-static KharebeneyAgent* agent = nullptr;
 
 // --- Инициализация I2C ---
 void init_i2c()
@@ -104,8 +104,6 @@ void display_message(const char* msg)
 // --- Отладочная информация ---
 void debug_agent_status(uint32_t step)
 {
-    if (!agent) return;
-
     printf("=== DEBUG STEP %u ===\n", (unsigned int)step);
     printf("Action: %s\n", agent->get_current_action() ? agent->get_current_action() : "N/A");
 

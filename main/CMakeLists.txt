@@ -11,6 +11,13 @@ idf_component_register(
          "screen/discipline/screen_discipline.cpp"
          "screen/settings/screen_settings.cpp"
          "lib/utlis.cpp"
-    INCLUDE_DIRS "." "screen" "lib"
+         "core/embedding.cpp"
+         "core/simple_systems.cpp"
+         "core/kharebeney_agent.cpp"
+         "core/internal_state.cpp"
+         "core/balance_manager.cpp"
+         "core/emotion_system.cpp"
+         "core/learning_system.cpp"
+    INCLUDE_DIRS "." "screen" "lib" "core"
     REQUIRES i2cdev ssd1306 esp_timer
 )
