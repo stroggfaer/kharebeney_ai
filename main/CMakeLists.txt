@@ -18,6 +18,7 @@ idf_component_register(
          "core/balance_manager.cpp"
          "core/emotion_system.cpp"
          "core/learning_system.cpp"
+         "core/agentTest.cpp"
     INCLUDE_DIRS "." "screen" "lib" "core"
     REQUIRES i2cdev ssd1306 esp_timer
 )

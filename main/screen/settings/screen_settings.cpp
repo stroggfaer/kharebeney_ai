@@ -1,5 +1,6 @@
 #include "screen_settings.h"
 #include "../core/kharebeney_agent.h"
+#include "../core/agentTest.h"  // Подключаем файл диагностики
 #include "../fonts/icons.h"
 #include "ssd1306.h"
 #include "../display.h"
@@ -23,20 +24,15 @@ void draw_screen_settings(SSD1306_t* oled) {
         const char* action = agent->update();
         printf("Выполнено обновление агента, текущее действие: %s\n", action ? action : "нет");
 
+        // Запускаем диагностику агента
+        AgentTest::runAllTests(agent);
+        
+        // Также запускаем многоуровневое тестирование
+        AgentTest::runMultiLevelTest(agent);
+
         // Тестирование внутренних состояний
         const InternalStates* states = agent->get_internal_states();
         if (states) {
-            printf("Текущие внутренние состояния:\n");
-            printf("  Голод: %.3f\n", states->hunger);
-            printf("  Счастье: %.3f\n", states->happiness);
-            printf("  Здоровье: %.3f\n", states->health);
-            printf(" Энергия: %.3f\n", states->energy);
-            printf("  Социальность: %.3f\n", states->social);
-            printf("  Любопытство: %.3f\n", states->curiosity);
-            printf("  Уровень: %" PRIu32 "\n", states->level);
-            printf("  Возраст: %" PRIu32 " сек\n", states->age);
-            printf("  Время: %" PRIu32 " сек\n", states->time);
-            
             // Создаем эмбеддинг из текущих состояний
             Embedding embedding = EmbeddingConverter::states_to_embedding((const float*)states);
             embedding.normalize(); // Нормализуем для лучшего сравнения
@@ -91,43 +87,6 @@ void draw_screen_settings(SSD1306_t* oled) {
             ssd1306_display_text(oled, 3, "No states", 9, false);
             printf("Ошибка: не удалось получить внутренние состояния агента\n");
         }
-        
-        // Тестирование эмоциональной системы
-        const Emotion* emotion = agent->get_emotional_state();
-        if (emotion) {
-            printf("=== Тестирование эмоциональной системы ===\n");
-            printf("Текущая эмоция: %s, интенсивность: %.3f\n", emotion->name.c_str(), emotion->intensity);
-            printf("Описание эмоционального состояния: %s\n", agent->get_emotional_description());
-        } else {
-            printf("Не удалось получить эмоциональное состояние агента\n");
-        }
-        
-        // Тестирование системы обучения
-        std::vector<std::string> learning_insights = agent->get_learning_insights();
-        printf("=== Тестирование системы обучения ===\n");
-        printf("Количество рекомендаций обучения: %zu\n", learning_insights.size());
-        for (size_t i = 0; i < learning_insights.size(); i++) {
-            printf("  Рекомендация %zu: %s\n", i+1, learning_insights[i].c_str());
-        }
-        
-        // Тестирование принятия решений
-        printf("=== Тестирование логики принятия решений ===\n");
-        printf("Текущее действие: %s\n", agent->get_current_action() ? agent->get_current_action() : "нет");
-        printf("Количество шагов: %" PRIu32 "\n", agent->get_step_count());
-        
-        // Тестирование системы памяти
-        printf("=== Тестирование системы памяти ===\n");
-        uint32_t total_memories, retrievals, consolidations;
-        agent->get_memory_summary(&total_memories, &retrievals, &consolidations);
-        printf("Всего воспоминаний: %" PRIu32 "\n", total_memories);
-        printf("Количество извлечений: %" PRIu32 "\n", retrievals);
-        printf("Количество консолидаций: %" PRIu32 "\n", consolidations);
-        
-        // Поиск воспоминаний по ключевому слову
-        std::vector<MemoryRecord> keyword_memories = agent->search_memories("feed");
-        printf("Найдено %zu воспоминаний по ключевому слову 'feed'\n", keyword_memories.size());
-        
-        printf("=== Конец тестирования агента ===\n");
     } else {
         ssd1306_display_text(oled, 3, "No agent", 8, false);
         printf("Ошибка: агент не инициализирован\n");
